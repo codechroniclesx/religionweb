@@ -1,0 +1,911 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Islamic Prayer Times</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🕌</text></svg>">
+    <style>
+        /* Base Styles */
+        :root {
+            --primary-color: #2c3e50;
+            --secondary-color: #3498db;
+            --text-color: #333;
+            --bg-color: #f9f9f9;
+            --card-bg: rgba(255, 255, 255, 0.85);
+            --shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            --nav-bg: rgba(44, 62, 80, 0.9);
+            --quote-bg: rgba(52, 152, 219, 0.1);
+        }
+
+        .dark-mode {
+            --primary-color: #3498db;
+            --secondary-color: #2c3e50;
+            --text-color: #f9f9f9;
+            --bg-color: #121212;
+            --card-bg: rgba(30, 30, 30, 0.85);
+            --shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+            --nav-bg: rgba(30, 30, 30, 0.9);
+            --quote-bg: rgba(52, 152, 219, 0.2);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            transition: background-color 0.3s, color 0.3s;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            color: var(--text-color);
+            background-color: var(--bg-color);
+            line-height: 1.6;
+            background-image: url('https://images.unsplash.com/photo-1519817650390-64a93db51149?ixlib=rb-1.2.1&auto=format&fit=crop&w=1950&q=80');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            position: relative;
+            min-height: 100vh;
+        }
+
+        body::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(3px);
+            z-index: -1;
+        }
+
+        /* Navigation */
+        .navbar {
+            background-color: var(--nav-bg);
+            color: white;
+            padding: 1rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 1000;
+            backdrop-filter: blur(5px);
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+        }
+
+        .logo i {
+            margin-right: 0.5rem;
+        }
+
+        .nav-links {
+            display: flex;
+            list-style: none;
+        }
+
+        .nav-links li {
+            margin-left: 1.5rem;
+        }
+
+        .nav-links a {
+            color: white;
+            text-decoration: none;
+            font-weight: 500;
+            padding: 0.5rem 1rem;
+            border-radius: 4px;
+            transition: background-color 0.3s;
+        }
+
+        .nav-links a:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+
+        .menu-toggle {
+            display: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            position: fixed;
+            top: 0;
+            left: -250px;
+            width: 250px;
+            height: 100%;
+            background-color: var(--nav-bg);
+            color: white;
+            transition: left 0.3s;
+            z-index: 1001;
+            padding-top: 4rem;
+        }
+
+        .sidebar.active {
+            left: 0;
+        }
+
+        .sidebar-links {
+            list-style: none;
+            padding: 1rem;
+        }
+
+        .sidebar-links li {
+            margin-bottom: 1rem;
+        }
+
+        .sidebar-links a {
+            color: white;
+            text-decoration: none;
+            font-size: 1.1rem;
+            display: block;
+            padding: 0.5rem;
+            border-radius: 4px;
+            transition: background-color 0.3s;
+        }
+
+        .sidebar-links a:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+
+        .sidebar-close {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            font-size: 1.5rem;
+            cursor: pointer;
+        }
+
+        /* Main Content */
+        .container {
+            max-width: 1200px;
+            margin: 5rem auto 2rem;
+            padding: 1rem;
+        }
+
+        /* Cards */
+        .card {
+            background-color: var(--card-bg);
+            border-radius: 10px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: var(--shadow);
+            backdrop-filter: blur(5px);
+        }
+
+        .card-title {
+            font-size: 1.8rem;
+            margin-bottom: 1rem;
+            color: var(--primary-color);
+            text-align: center;
+            border-bottom: 2px solid var(--primary-color);
+            padding-bottom: 0.5rem;
+        }
+
+        /* Home Page */
+        .hero {
+            text-align: center;
+            padding: 3rem 0;
+        }
+
+        .hero h1 {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+            color: white;
+        }
+
+        .hero p {
+            font-size: 1.2rem;
+            max-width: 800px;
+            margin: 0 auto 2rem;
+            color: white;
+        }
+
+        .quote-card {
+            max-width: 800px;
+            margin: 2rem auto;
+            background-color: var(--quote-bg);
+            border-left: 4px solid var(--primary-color);
+        }
+
+        .quote-text {
+            font-style: italic;
+            font-size: 1.1rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .quote-source {
+            text-align: right;
+            font-weight: bold;
+        }
+
+        /* Prayer Times */
+        .prayer-times-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-top: 2rem;
+        }
+
+        .prayer-time {
+            background-color: var(--card-bg);
+            border-radius: 8px;
+            padding: 1.5rem;
+            text-align: center;
+            box-shadow: var(--shadow);
+            transition: transform 0.3s;
+        }
+
+        .prayer-time:hover {
+            transform: translateY(-5px);
+        }
+
+        .prayer-name {
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: var(--primary-color);
+            margin-bottom: 0.5rem;
+        }
+
+        .prayer-time-value {
+            font-size: 1.5rem;
+            font-weight: bold;
+        }
+
+        .current-prayer {
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        .current-prayer .prayer-name,
+        .current-prayer .prayer-time-value {
+            color: white;
+        }
+
+        .loading {
+            text-align: center;
+            font-size: 1.2rem;
+            padding: 2rem;
+        }
+
+        .error {
+            text-align: center;
+            font-size: 1.2rem;
+            padding: 2rem;
+            color: #e74c3c;
+        }
+
+        .location-info {
+            text-align: center;
+            margin-bottom: 1rem;
+            font-style: italic;
+        }
+
+        /* Tasbeeh Counter */
+        .tasbeeh-counter {
+            text-align: center;
+        }
+
+        .counter-display {
+            font-size: 4rem;
+            font-weight: bold;
+            margin: 1rem 0;
+            color: var(--primary-color);
+        }
+
+        .counter-btn {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 80px;
+            height: 80px;
+            font-size: 1.5rem;
+            cursor: pointer;
+            margin: 0 0.5rem;
+            transition: background-color 0.3s, transform 0.2s;
+        }
+
+        .counter-btn:hover {
+            background-color: var(--secondary-color);
+            transform: scale(1.05);
+        }
+
+        .reset-btn {
+            background-color: #e74c3c;
+        }
+
+        .reset-btn:hover {
+            background-color: #c0392b;
+        }
+
+        .counter-message {
+            margin-top: 1rem;
+            font-style: italic;
+            color: var(--primary-color);
+            min-height: 2rem;
+        }
+
+        /* Dhikr Section */
+        .dhikr-item {
+            margin-bottom: 2rem;
+            padding: 1.5rem;
+            background-color: var(--quote-bg);
+            border-radius: 8px;
+        }
+
+        .dhikr-arabic {
+            font-size: 1.8rem;
+            text-align: right;
+            margin-bottom: 0.5rem;
+            font-weight: bold;
+            line-height: 1.8;
+        }
+
+        .dhikr-translation {
+            font-style: italic;
+            margin-bottom: 0.5rem;
+            font-size: 1.1rem;
+        }
+
+        .dhikr-reference {
+            font-size: 0.9rem;
+            color: #7f8c8d;
+        }
+
+        .dhikr-benefits {
+            margin-top: 0.5rem;
+            padding: 0.8rem;
+            background-color: rgba(0, 0, 0, 0.05);
+            border-radius: 5px;
+        }
+
+        /* Dark Mode Toggle */
+        .dark-mode-toggle {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            font-size: 1.2rem;
+            cursor: pointer;
+            box-shadow: var(--shadow);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .nav-links {
+                display: none;
+            }
+
+            .menu-toggle {
+                display: block;
+            }
+
+            .prayer-times-container {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .prayer-times-container {
+                grid-template-columns: 1fr;
+            }
+
+            .counter-btn {
+                width: 60px;
+                height: 60px;
+                font-size: 1.2rem;
+            }
+        }
+    </style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="logo">
+            <i class="fas fa-mosque"></i>
+            <span>Islamic Guide</span>
+        </div>
+        <ul class="nav-links">
+            <li><a href="#home" class="nav-link active" data-page="home"><i class="fas fa-home"></i> Home</a></li>
+            <li><a href="#prayer-times" class="nav-link" data-page="prayer-times"><i class="fas fa-clock"></i> Prayer Times</a></li>
+            <li><a href="#dhikr" class="nav-link" data-page="dhikr"><i class="fas fa-pray"></i> Daily Dhikr</a></li>
+            <li><a href="#tasbeeh" class="nav-link" data-page="tasbeeh"><i class="fas fa-hands-praying"></i> Tasbeeh Counter</a></li>
+        </ul>
+        <div class="menu-toggle">
+            <i class="fas fa-bars"></i>
+        </div>
+    </nav>
+
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <div class="sidebar-close">
+            <i class="fas fa-times"></i>
+        </div>
+        <ul class="sidebar-links">
+            <li><a href="#home" class="sidebar-link active" data-page="home"><i class="fas fa-home"></i> Home</a></li>
+            <li><a href="#prayer-times" class="sidebar-link" data-page="prayer-times"><i class="fas fa-clock"></i> Prayer Times</a></li>
+            <li><a href="#dhikr" class="sidebar-link" data-page="dhikr"><i class="fas fa-pray"></i> Daily Dhikr</a></li>
+            <li><a href="#tasbeeh" class="sidebar-link" data-page="tasbeeh"><i class="fas fa-hands-praying"></i> Tasbeeh Counter</a></li>
+        </ul>
+    </div>
+
+    <!-- Main Content -->
+    <div class="container">
+        <!-- Home Page -->
+        <div id="home" class="page active">
+            <div class="hero">
+                <h1>Welcome to Islamic Guide</h1>
+                <p>Your companion for prayer times, daily dhikr, and spiritual growth</p>
+            </div>
+            
+            <div class="card quote-card">
+                <div class="quote-text">
+                    "The best among you are those who have the best manners and character."
+                </div>
+                <div class="quote-source">- Prophet Muhammad (PBUH)</div>
+            </div>
+            
+            <div class="card">
+                <h2 class="card-title">About This Website</h2>
+                <p>This website is designed to help Muslims in their daily worship by providing accurate prayer times based on their location, daily dhikr reminders, and a digital tasbeeh counter to keep track of your remembrance of Allah.</p>
+                <p>May Allah accept our good deeds and make this a source of benefit for all who use it. Ameen.</p>
+            </div>
+        </div>
+
+        <!-- Prayer Times Page -->
+        <div id="prayer-times" class="page">
+            <div class="card">
+                <h2 class="card-title">Prayer Times</h2>
+                <div class="location-info" id="location-info">Detecting your location...</div>
+                <div id="prayer-times-display">
+                    <div class="loading">
+                        <i class="fas fa-spinner fa-spin"></i> Fetching prayer times...
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Daily Dhikr Page -->
+        <div id="dhikr" class="page">
+            <div class="card">
+                <h2 class="card-title">Daily Dhikr and Dua</h2>
+                
+                <div class="dhikr-item">
+                    <div class="dhikr-arabic">سُبْحَانَ اللَّهِ وَبِحَمْدِهِ</div>
+                    <div class="dhikr-translation">Glory is to Allah and praise is to Him</div>
+                    <div class="dhikr-reference">(Bukhari and Muslim)</div>
+                    <div class="dhikr-benefits">
+                        <p>Recite this 100 times a day and your sins will be forgiven even if they were like the foam of the sea.</p>
+                    </div>
+                </div>
+                
+                <div class="dhikr-item">
+                    <div class="dhikr-arabic">لَا حَوْلَ وَلَا قُوَّةَ إِلَّا بِاللَّهِ</div>
+                    <div class="dhikr-translation">There is no might nor power except with Allah</div>
+                    <div class="dhikr-reference">(Bukhari and Muslim)</div>
+                    <div class="dhikr-benefits">
+                        <p>This is one of the treasures of Paradise and a protection from hardship.</p>
+                    </div>
+                </div>
+                
+                <div class="dhikr-item">
+                    <div class="dhikr-arabic">اللَّهُمَّ صَلِّ عَلَى مُحَمَّدٍ وَعَلَى آلِ مُحَمَّدٍ</div>
+                    <div class="dhikr-translation">O Allah, send blessings upon Muhammad and the family of Muhammad</div>
+                    <div class="dhikr-reference">(Muslim)</div>
+                    <div class="dhikr-benefits">
+                        <p>Sending blessings upon the Prophet (PBUH) is a means of drawing closer to Allah and having our sins forgiven.</p>
+                    </div>
+                </div>
+                
+                <div class="dhikr-item">
+                    <div class="dhikr-arabic">أَسْتَغْفِرُ اللَّهَ</div>
+                    <div class="dhikr-translation">I seek forgiveness from Allah</div>
+                    <div class="dhikr-reference">(Various sources)</div>
+                    <div class="dhikr-benefits">
+                        <p>Seeking forgiveness opens doors of mercy, relieves stress, and brings provision.</p>
+                    </div>
+                </div>
+
+                <div class="dhikr-item">
+                    <div class="dhikr-arabic">لَا إِلَهَ إِلَّا اللَّهُ وَحْدَهُ لَا شَرِيكَ لَهُ، لَهُ الْمُلْكُ وَلَهُ الْحَمْدُ وَهُوَ عَلَى كُلِّ شَيْءٍ قَدِيرٌ</div>
+                    <div class="dhikr-translation">There is no god but Allah alone, with no partner or associate; His is the dominion, to Him be all praise, and He has power over all things</div>
+                    <div class="dhikr-reference">(Bukhari and Muslim)</div>
+                    <div class="dhikr-benefits">
+                        <p>Reciting this 100 times earns the reward of freeing 10 slaves, writes 100 good deeds, erases 100 bad deeds, and provides protection from Satan.</p>
+                    </div>
+                </div>
+
+                <div class="dhikr-item">
+                    <div class="dhikr-arabic">سُبْحَانَ اللَّهِ وَبِحَمْدِهِ، سُبْحَانَ اللَّهِ الْعَظِيمِ</div>
+                    <div class="dhikr-translation">Glory is to Allah and praise is to Him, Glory is to Allah the Almighty</div>
+                    <div class="dhikr-reference">(Bukhari and Muslim)</div>
+                    <div class="dhikr-benefits">
+                        <p>These are two phrases light on the tongue but heavy on the scales of good deeds and beloved to the Most Merciful.</p>
+                    </div>
+                </div>
+
+                <div class="dhikr-item">
+                    <div class="dhikr-arabic">رَضِينَا بِاللَّهِ رَبًّا، وَبِالْإِسْلَامِ دِينًا، وَبِمُحَمَّدٍ نَبِيًّا</div>
+                    <div class="dhikr-translation">We are pleased with Allah as our Lord, with Islam as our religion, and with Muhammad as our Prophet</div>
+                    <div class="dhikr-reference">(Tirmidhi)</div>
+                    <div class="dhikr-benefits">
+                        <p>Whoever says this three times every morning and evening will have the pleasure of Allah on the Day of Resurrection.</p>
+                    </div>
+                </div>
+
+                <div class="dhikr-item">
+                    <div class="dhikr-arabic">حَسْبِيَ اللَّهُ لَا إِلَهَ إِلَّا هُوَ عَلَيْهِ تَوَكَّلْتُ وَهُوَ رَبُّ الْعَرْشِ الْعَظِيمِ</div>
+                    <div class="dhikr-translation">Allah is sufficient for me, there is no god but Him; in Him I place my trust and He is the Lord of the Mighty Throne</div>
+                    <div class="dhikr-reference">(Abu Dawud)</div>
+                    <div class="dhikr-benefits">
+                        <p>Whoever says this seven times in the morning and evening, Allah will suffice him against whatever worries him.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tasbeeh Counter Page -->
+        <div id="tasbeeh" class="page">
+            <div class="card">
+                <h2 class="card-title">Tasbeeh Counter</h2>
+                <div class="tasbeeh-counter">
+                    <div class="counter-display" id="counter">0</div>
+                    <button class="counter-btn" id="increment-btn"><i class="fas fa-plus"></i></button>
+                    <button class="counter-btn reset-btn" id="reset-btn"><i class="fas fa-redo"></i></button>
+                    <div class="counter-message" id="counter-message"></div>
+                </div>
+                <div style="text-align: center; margin-top: 1rem;">
+                    <p>Use this counter to keep track of your dhikr, tasbeeh, or any other act of worship.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Dark Mode Toggle -->
+    <button class="dark-mode-toggle" id="dark-mode-toggle">
+        <i class="fas fa-moon"></i>
+    </button>
+
+    <script>
+        // DOM Elements
+        const pages = document.querySelectorAll('.page');
+        const navLinks = document.querySelectorAll('.nav-link');
+        const sidebarLinks = document.querySelectorAll('.sidebar-link');
+        const menuToggle = document.querySelector('.menu-toggle');
+        const sidebar = document.querySelector('.sidebar');
+        const sidebarClose = document.querySelector('.sidebar-close');
+        const darkModeToggle = document.getElementById('dark-mode-toggle');
+        const counterDisplay = document.getElementById('counter');
+        const incrementBtn = document.getElementById('increment-btn');
+        const resetBtn = document.getElementById('reset-btn');
+        const prayerTimesDisplay = document.getElementById('prayer-times-display');
+        const locationInfo = document.getElementById('location-info');
+        const counterMessage = document.getElementById('counter-message');
+
+        // App State
+        let currentPage = 'home';
+        let counter = localStorage.getItem('tasbeehCounter') || 0;
+        let darkMode = localStorage.getItem('darkMode') === 'true';
+        let locationTimeout;
+
+        // Motivational messages for tasbeeh counter
+        const motivationalMessages = [
+            "May Allah make it easy for you!",
+            "Keep going, the reward is with Allah!",
+            "Every remembrance brings you closer to Allah!",
+            "Allah is with those who remember Him!",
+            "Your efforts are being recorded!",
+            "The angels are praying for you!",
+            "Paradise is worth the effort!",
+            "Allah loves those who are consistent!",
+            "Your sins are being erased!",
+            "The reward is multiplied!"
+        ];
+
+        // Initialize
+        function init() {
+            // Set dark mode if enabled
+            if (darkMode) {
+                document.body.classList.add('dark-mode');
+                darkModeToggle.innerHTML = '<i class="fas fa-sun"></i>';
+            }
+            
+            // Set counter display
+            counterDisplay.textContent = counter;
+            
+            // Show current page based on hash
+            const hash = window.location.hash.substring(1);
+            if (hash && document.getElementById(hash)) {
+                showPage(hash);
+            } else {
+                showPage(currentPage);
+            }
+            
+            // Add hash change listener
+            window.addEventListener('hashchange', () => {
+                const newHash = window.location.hash.substring(1);
+                if (newHash && document.getElementById(newHash)) {
+                    showPage(newHash);
+                }
+            });
+        }
+
+        // Navigation
+        function showPage(pageId) {
+            // Hide all pages
+            pages.forEach(page => {
+                page.classList.remove('active');
+            });
+            
+            // Show selected page
+            document.getElementById(pageId).classList.add('active');
+            
+            // Update active nav link
+            navLinks.forEach(link => {
+                link.classList.remove('active');
+                if (link.dataset.page === pageId) {
+                    link.classList.add('active');
+                }
+            });
+            
+            // Update active sidebar link
+            sidebarLinks.forEach(link => {
+                link.classList.remove('active');
+                if (link.dataset.page === pageId) {
+                    link.classList.add('active');
+                }
+            });
+            
+            // Update current page
+            currentPage = pageId;
+            
+            // Fetch prayer times if needed
+            if (pageId === 'prayer-times') {
+                fetchPrayerTimes();
+            }
+        }
+
+        // Event Listeners
+        navLinks.forEach(link => {
+            link.addEventListener('click', (e) => {
+                e.preventDefault();
+                window.location.hash = link.getAttribute('href');
+            });
+        });
+
+        sidebarLinks.forEach(link => {
+            link.addEventListener('click', (e) => {
+                e.preventDefault();
+                window.location.hash = link.getAttribute('href');
+                sidebar.classList.remove('active');
+            });
+        });
+
+        menuToggle.addEventListener('click', () => {
+            sidebar.classList.add('active');
+        });
+
+        sidebarClose.addEventListener('click', () => {
+            sidebar.classList.remove('active');
+        });
+
+        // Tasbeeh Counter
+        incrementBtn.addEventListener('click', () => {
+            counter++;
+            counterDisplay.textContent = counter;
+            localStorage.setItem('tasbeehCounter', counter);
+            
+            // Show motivational message every 10 counts
+            if (counter % 10 === 0) {
+                const randomMessage = motivationalMessages[Math.floor(Math.random() * motivationalMessages.length)];
+                counterMessage.textContent = randomMessage;
+                
+                // Clear message after 3 seconds
+                setTimeout(() => {
+                    counterMessage.textContent = '';
+                }, 3000);
+            }
+        });
+
+        resetBtn.addEventListener('click', () => {
+            counter = 0;
+            counterDisplay.textContent = counter;
+            localStorage.setItem('tasbeehCounter', counter);
+            counterMessage.textContent = '';
+        });
+
+        // Dark Mode Toggle
+        darkModeToggle.addEventListener('click', () => {
+            darkMode = !darkMode;
+            
+            if (darkMode) {
+                document.body.classList.add('dark-mode');
+                darkModeToggle.innerHTML = '<i class="fas fa-sun"></i>';
+            } else {
+                document.body.classList.remove('dark-mode');
+                darkModeToggle.innerHTML = '<i class="fas fa-moon"></i>';
+            }
+            
+            localStorage.setItem('darkMode', darkMode);
+        });
+
+        // Prayer Times Functions
+        function fetchPrayerTimes() {
+            // Clear any existing timeout
+            if (locationTimeout) {
+                clearTimeout(locationTimeout);
+            }
+            
+            // Set timeout for location detection (5 seconds)
+            locationTimeout = setTimeout(() => {
+                if (!locationInfo.textContent.includes('Makkah')) {
+                    locationInfo.textContent = 'Location detection taking too long. Using default location (Makkah).';
+                    getPrayerTimesFromAPI(21.3891, 39.8579); // Default to Makkah
+                }
+            }, 5000);
+            
+            // Check if prayer times are in localStorage
+            const savedPrayerTimes = localStorage.getItem('prayerTimes');
+            const savedLocation = localStorage.getItem('prayerLocation');
+            const savedDate = localStorage.getItem('prayerDate');
+            
+            // If we have saved data from today, use it
+            if (savedPrayerTimes && savedLocation && savedDate === new Date().toDateString()) {
+                displayPrayerTimes(JSON.parse(savedPrayerTimes), JSON.parse(savedLocation));
+                return;
+            }
+            
+            // Otherwise, fetch fresh data
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(
+                    (position) => {
+                        clearTimeout(locationTimeout);
+                        const { latitude, longitude } = position.coords;
+                        getPrayerTimesFromAPI(latitude, longitude);
+                    },
+                    (error) => {
+                        clearTimeout(locationTimeout);
+                        console.error('Error getting location:', error);
+                        locationInfo.textContent = 'Could not detect your location. Using default location (Makkah).';
+                        getPrayerTimesFromAPI(21.3891, 39.8579); // Default to Makkah
+                    },
+                    {
+                        enableHighAccuracy: true,
+                        timeout: 10000,
+                        maximumAge: 0
+                    }
+                );
+            } else {
+                locationInfo.textContent = 'Geolocation is not supported by your browser. Using default location (Makkah).';
+                getPrayerTimesFromAPI(21.3891, 39.8579); // Default to Makkah
+            }
+        }
+
+        function getPrayerTimesFromAPI(latitude, longitude) {
+            const date = new Date();
+            const today = date.toISOString().split('T')[0];
+            
+            // Aladhan API endpoint
+            const apiUrl = `https://api.aladhan.com/v1/timings/${today}?latitude=${latitude}&longitude=${longitude}&method=2`;
+            
+            fetch(apiUrl)
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    if (data.code === 200 && data.data) {
+                        // Save to localStorage
+                        const locationData = {
+                            city: data.data.meta.timezone,
+                            latitude,
+                            longitude
+                        };
+                        
+                        localStorage.setItem('prayerTimes', JSON.stringify(data.data.timings));
+                        localStorage.setItem('prayerLocation', JSON.stringify(locationData));
+                        localStorage.setItem('prayerDate', new Date().toDateString());
+                        
+                        // Display the prayer times
+                        displayPrayerTimes(data.data.timings, locationData);
+                    } else {
+                        throw new Error('Invalid API response');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error fetching prayer times:', error);
+                    prayerTimesDisplay.innerHTML = `
+                        <div class="error">
+                            <i class="fas fa-exclamation-triangle"></i> Prayer times could not be loaded. Please try again later.
+                        </div>
+                    `;
+                });
+        }
+
+        function displayPrayerTimes(timings, location) {
+            // Update location info
+            locationInfo.textContent = `Prayer times for ${location.city || 'your location'} (${new Date().toLocaleDateString()})`;
+            
+            // Extract the prayer times we need
+            const prayerTimes = {
+                'Fajr': timings.Fajr,
+                'Sunrise': timings.Sunrise,
+                'Dhuhr': timings.Dhuhr,
+                'Asr': timings.Asr,
+                'Maghrib': timings.Maghrib,
+                'Isha': timings.Isha
+            };
+            
+            // Determine which prayer is current
+            const now = new Date();
+            const currentTime = now.getHours() * 60 + now.getMinutes();
+            let currentPrayer = null;
+            
+            // Convert prayer times to minutes since midnight for comparison
+            const prayerTimesInMinutes = {};
+            for (const [prayer, time] of Object.entries(prayerTimes)) {
+                const [hours, minutes] = time.split(':').map(Number);
+                prayerTimesInMinutes[prayer] = hours * 60 + minutes;
+            }
+            
+            // Check which prayer period we're in
+            if (currentTime < prayerTimesInMinutes.Fajr) {
+                currentPrayer = 'Isha'; // Between Isha and Fajr
+            } else if (currentTime < prayerTimesInMinutes.Sunrise) {
+                currentPrayer = 'Fajr';
+            } else if (currentTime < prayerTimesInMinutes.Dhuhr) {
+                currentPrayer = 'Sunrise';
+            } else if (currentTime < prayerTimesInMinutes.Asr) {
+                currentPrayer = 'Dhuhr';
+            } else if (currentTime < prayerTimesInMinutes.Maghrib) {
+                currentPrayer = 'Asr';
+            } else if (currentTime < prayerTimesInMinutes.Isha) {
+                currentPrayer = 'Maghrib';
+            } else {
+                currentPrayer = 'Isha';
+            }
+            
+            // Generate HTML for prayer times
+            let html = '<div class="prayer-times-container">';
+            
+            for (const [prayer, time] of Object.entries(prayerTimes)) {
+                const isCurrent = prayer === currentPrayer;
+                html += `
+                    <div class="prayer-time ${isCurrent ? 'current-prayer' : ''}">
+                        <div class="prayer-name">${prayer}</div>
+                        <div class="prayer-time-value">${time}</div>
+                        ${isCurrent ? '<div class="current-indicator">Current</div>' : ''}
+                    </div>
+                `;
+            }
+            
+            html += '</div>';
+            prayerTimesDisplay.innerHTML = html;
+        }
+
+        // Initialize the app
+        init();
+    </script>
+</body>
+</html>
